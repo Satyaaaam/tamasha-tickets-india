@@ -7,21 +7,20 @@ export const Header = () => {
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/40">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center space-x-8">
-          <div className="flex items-center space-x-2">
+          <a href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 bg-gradient-hero rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">T</span>
             </div>
             <span className="text-xl font-bold bg-gradient-hero bg-clip-text text-transparent">
               TicketBazaar
             </span>
-          </div>
+          </a>
           
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            <a href="#" className="text-foreground/60 hover:text-foreground transition-colors">Cricket</a>
-            <a href="#" className="text-foreground/60 hover:text-foreground transition-colors">Bollywood</a>
-            <a href="#" className="text-foreground/60 hover:text-foreground transition-colors">Concerts</a>
-            <a href="#" className="text-foreground/60 hover:text-foreground transition-colors">Theater</a>
-            <a href="#" className="text-foreground/60 hover:text-foreground transition-colors">Festivals</a>
+            <a href="/events" className="text-foreground/60 hover:text-foreground transition-colors">Events</a>
+            <a href="/sell-tickets" className="text-foreground/60 hover:text-foreground transition-colors">Sell Tickets</a>
+            <a href="/how-it-works" className="text-foreground/60 hover:text-foreground transition-colors">How it Works</a>
+            <a href="/about" className="text-foreground/60 hover:text-foreground transition-colors">About</a>
           </nav>
         </div>
 

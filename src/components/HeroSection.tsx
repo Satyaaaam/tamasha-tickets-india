@@ -50,8 +50,8 @@ export const HeroSection = () => {
                 />
               </div>
               
-              <Button className="h-12 text-lg font-semibold bg-gradient-hero hover:opacity-90 transition-opacity">
-                Find Tickets
+              <Button className="h-12 text-lg font-semibold bg-gradient-hero hover:opacity-90 transition-opacity" asChild>
+                <a href="/events">Find Tickets</a>
               </Button>
             </div>
           </div>
