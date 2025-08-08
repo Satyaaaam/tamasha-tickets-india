@@ -63,6 +63,15 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-sunset': 'var(--gradient-sunset)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'saffron': 'var(--shadow-saffron)',
+				'elegant': 'var(--shadow-elegant)'
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
