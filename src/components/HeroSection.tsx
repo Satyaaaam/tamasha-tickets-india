@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, Calendar } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 
@@ -43,11 +44,22 @@ export const HeroSection = () => {
               </div>
               
               <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-                <Input
-                  placeholder="Mumbai, Delhi, Bangalore..."
-                  className="pl-12 h-12"
-                />
+                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 z-10" />
+                <Select>
+                  <SelectTrigger className="pl-12 h-12">
+                    <SelectValue placeholder="Select city..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="mumbai">Mumbai</SelectItem>
+                    <SelectItem value="delhi">Delhi</SelectItem>
+                    <SelectItem value="bangalore">Bangalore</SelectItem>
+                    <SelectItem value="chennai">Chennai</SelectItem>
+                    <SelectItem value="kolkata">Kolkata</SelectItem>
+                    <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                    <SelectItem value="pune">Pune</SelectItem>
+                    <SelectItem value="gurgaon">Gurgaon</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <Button className="h-12 text-lg font-semibold bg-gradient-hero hover:opacity-90 transition-opacity" asChild>
