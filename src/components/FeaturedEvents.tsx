@@ -1,6 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Calendar, 
   MapPin, 
@@ -10,66 +13,79 @@ import {
   Users
 } from "lucide-react";
 
-const featuredEvents = [
-  {
-    id: 1,
-    title: "IPL Final 2024",
-    subtitle: "Mumbai Indians vs Chennai Super Kings",
-    venue: "Wankhede Stadium, Mumbai",
-    date: "May 26, 2024",
-    time: "7:30 PM",
-    image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    price: "₹2,500",
-    category: "Cricket",
-    rating: 4.8,
-    trending: true,
-    attendees: "45K+"
-  },
-  {
-    id: 2,
-    title: "AR Rahman Live in Concert",
-    subtitle: "Symphony of Dreams Tour",
-    venue: "NSCI Dome, Mumbai",
-    date: "June 15, 2024",
-    time: "8:00 PM",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    price: "₹1,999",
-    category: "Music",
-    rating: 4.9,
-    trending: false,
-    attendees: "12K+"
-  },
-  {
-    id: 3,
-    title: "Bollywood Night Extravaganza",
-    subtitle: "Featuring Top Playback Singers",
-    venue: "Jawaharlal Nehru Stadium, Delhi",
-    date: "July 8, 2024",
-    time: "7:00 PM",
-    image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    price: "₹999",
-    category: "Bollywood",
-    rating: 4.7,
-    trending: true,
-    attendees: "25K+"
-  },
-  {
-    id: 4,
-    title: "Classical Music Festival",
-    subtitle: "Ragas Under the Stars",
-    venue: "Chowdiah Memorial Hall, Bangalore",
-    date: "June 22, 2024",
-    time: "6:30 PM",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    price: "₹799",
-    category: "Classical",
-    rating: 4.6,
-    trending: false,
-    attendees: "3K+"
-  }
-];
+interface Event {
+  id: string;
+  title: string;
+  description?: string;
+  venue: string;
+  city: string;
+  event_date: string;
+  event_time?: string;
+  category: string;
+  image_url?: string;
+  min_price?: number;
+  max_price?: number;
+  total_tickets: number;
+  available_tickets: number;
+}
 
 export const FeaturedEvents = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('status', 'active')
+        .order('event_date', { ascending: true })
+        .limit(6);
+
+      if (error) {
+        console.error('Error fetching events:', error);
+        return;
+      }
+
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const formatTime = (timeString?: string) => {
+    if (!timeString) return '';
+    return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-IN', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  if (loading) {
+    return (
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center">Loading events...</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
@@ -83,20 +99,22 @@ export const FeaturedEvents = () => {
               Don't miss these incredible events happening near you
             </p>
           </div>
-          <Button variant="outline" className="hidden md:flex">
-            View All Events
-          </Button>
+          <Link to="/events">
+            <Button variant="outline" className="hidden md:flex">
+              View All Events
+            </Button>
+          </Link>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredEvents.map((event) => (
+          {events.map((event) => (
             <Card 
               key={event.id}
               className="group cursor-pointer hover:shadow-saffron transition-all duration-300 hover:-translate-y-1 overflow-hidden bg-gradient-card border-0"
             >
               <div className="relative">
                 <img 
-                  src={event.image} 
+                  src={event.image_url || "/placeholder.svg"} 
                   alt={event.title}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -104,9 +122,9 @@ export const FeaturedEvents = () => {
                   <Badge className="bg-primary text-primary-foreground">
                     {event.category}
                   </Badge>
-                  {event.trending && (
-                    <Badge className="bg-secondary text-secondary-foreground">
-                      Trending
+                  {event.available_tickets < event.total_tickets * 0.2 && (
+                    <Badge className="bg-destructive text-destructive-foreground">
+                      Limited
                     </Badge>
                   )}
                 </div>
@@ -126,30 +144,36 @@ export const FeaturedEvents = () => {
                   </h3>
                   <div className="flex items-center gap-1 text-sm">
                     <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                    <span className="text-muted-foreground">{event.rating}</span>
+                    <span className="text-muted-foreground">4.8</span>
                   </div>
                 </div>
                 
-                <p className="text-sm text-muted-foreground mb-3">
-                  {event.subtitle}
-                </p>
+                {event.description && (
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    {event.description}
+                  </p>
+                )}
                 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>{event.date}</span>
-                    <Clock className="h-4 w-4 ml-2" />
-                    <span>{event.time}</span>
+                    <span>{formatDate(event.event_date)}</span>
+                    {event.event_time && (
+                      <>
+                        <Clock className="h-4 w-4 ml-2" />
+                        <span>{formatTime(event.event_time)}</span>
+                      </>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span className="truncate">{event.venue}</span>
+                    <span className="truncate">{event.venue}, {event.city}</span>
                   </div>
                   
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Users className="h-4 w-4" />
-                    <span>{event.attendees} attending</span>
+                    <span>{event.available_tickets} available</span>
                   </div>
                 </div>
                 
@@ -157,12 +181,14 @@ export const FeaturedEvents = () => {
                   <div>
                     <span className="text-sm text-muted-foreground">Starting from</span>
                     <div className="text-xl font-bold text-primary">
-                      {event.price}
+                      {event.min_price ? `₹${event.min_price}` : 'TBA'}
                     </div>
                   </div>
-                  <Button size="sm" className="bg-gradient-hero hover:opacity-90">
-                    Book Now
-                  </Button>
+                  <Link to={`/event/${event.id}`}>
+                    <Button size="sm" className="bg-gradient-hero hover:opacity-90">
+                      Book Now
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -170,9 +196,11 @@ export const FeaturedEvents = () => {
         </div>
         
         <div className="text-center mt-8 md:hidden">
-          <Button variant="outline" size="lg">
-            View All Events
-          </Button>
+          <Link to="/events">
+            <Button variant="outline" size="lg">
+              View All Events
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
